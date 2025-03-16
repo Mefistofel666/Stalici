@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Угадай столицу или страну</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option {
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .option:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Угадай столицу или страну</h1>
+        <div class="question" id="question"></div>
+        <div class="options" id="options"></div>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const countries = [
+            { country: "Россия", capital: "Москва" },
+            { country: "Украина", capital: "Киев" },
+            { country: "Беларусь", capital: "Минск" },
+            { country: "Казахстан", capital: "Нур-Султан" },
+            { country: "Узбекистан", capital: "Ташкент" },
+            { country: "Грузия", capital: "Тбилиси" },
+            { country: "Азербайджан", capital: "Баку" },
+            { country: "Литва", capital: "Вильнюс" },
+            { country: "Молдова", capital: "Кишинёв" },
+            { country: "Латвия", capital: "Рига" },
+            { country: "Кыргызстан", capital: "Бишкек" },
+            { country: "Таджикистан", capital: "Душанбе" },
+            { country: "Армения", capital: "Ереван" },
+            { country: "Туркменистан", capital: "Ашхабад" },
+            { country: "Эстония", capital: "Таллин" }
+        ];
+
+        let currentQuestion;
+        let correctAnswer;
+
+        function getRandomQuestion() {
+            const randomIndex = Math.floor(Math.random() * countries.length);
+            const randomCountry = countries[randomIndex];
+            const isCountryQuestion = Math.random() > 0.5;
+
+            if (isCountryQuestion) {
+                currentQuestion = `Назовите столицу страны: ${randomCountry.country}`;
+                correctAnswer = randomCountry.capital;
+            } else {
+                currentQuestion = `Назовите страну, столица которой: ${randomCountry.capital}`;
+                correctAnswer = randomCountry.country;
+            }
+
+            document.getElementById("question").textContent = currentQuestion;
+            generateOptions();
+        }
+
+        function generateOptions() {
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+
+            const allOptions = countries.map(c => isCountryQuestion() ? c.capital : c.country);
+            const shuffledOptions = shuffle([...allOptions.filter(opt => opt !== correctAnswer)].slice(0, 3).concat(correctAnswer));
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement("button");
+                button.className = "option";
+                button.textContent = option;
+                button.addEventListener("click", () => checkAnswer(option));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function isCountryQuestion() {
+            return currentQuestion.startsWith("Назовите столицу");
+        }
+
+        function checkAnswer(selected) {
+            const result = document.getElementById("result");
+            if (selected === correctAnswer) {
+                result.textContent = "Правильно! 🎉";
+                result.style.color = "green";
+            } else {
+                result.textContent = `Неправильно. Правильный ответ: ${correctAnswer}`;
+                result.style.color = "red";
+            }
+            setTimeout(() => {
+                result.textContent = "";
+                getRandomQuestion();
+            }, 2000);
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        document.addEventListener("DOMContentLoaded", getRandomQuestion);
+    </script>
+</body>
+</html>
